@@ -1,7 +1,6 @@
 #include <functional>
 #include <map>
 #include <mutex>
-#include <string>
 #include <typeindex>
 
 namespace nineknight {
