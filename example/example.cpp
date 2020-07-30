@@ -4,6 +4,12 @@
 
 using namespace nineknight;
 
+class FooBar
+{
+  public:
+    void show(uint32_t, std::string str) { std::cout << str << std::endl; }
+};
+
 void add(delegate<void(uint32_t, std::string)> &onEvent)
 {
     std::string lambda{"hello world"};
@@ -53,6 +59,13 @@ int main()
 
     add(onEvent);    // this won't add the function in `add`, duplicated
     del(onEvent);
+
+    FooBar foobar;
+    auto func3 = std::bind(&FooBar::show, &foobar, std::placeholders::_1,
+                           std::placeholders::_2);
+    onEvent += func3;
+    onEvent -= std::bind(&FooBar::show, &foobar, std::placeholders::_1,
+                         std::placeholders::_2);    // this can remove func3
 
     // call delegate
     onEvent(12345, "hello");
