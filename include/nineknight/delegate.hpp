@@ -1,7 +1,5 @@
 #include <functional>
-#include <map>
-#include <mutex>
-#include <typeindex>
+#include <list>
 
 namespace nineknight {
 
@@ -11,8 +9,7 @@ class delegate;
 template <typename R, typename... Args>
 class delegate<R(Args...)>
 {
-    std::mutex lock;
-    std::map<std::type_index, std::function<R(Args...)>> functions;
+    std::list<std::function<R(Args...)>> functions;
 
     delegate(const delegate&);
     delegate& operator=(const delegate&);
@@ -21,24 +18,31 @@ class delegate<R(Args...)>
     delegate() = default;
     void operator()(Args... args)
     {
-        std::lock_guard<std::mutex> guard(lock);
         for (auto& function : functions) {
-            function.second(args...);
+            function(args...);
         }
     }
     bool Add(std::function<R(Args...)> cb)
     {
-        std::lock_guard<std::mutex> guard(lock);
-        return functions.emplace(std::type_index(cb.target_type()), cb).second;
+        // for (auto it = functions.begin(); it != functions.end(); it++) {
+        //     if (it->target_type() == cb.target_type()) {
+        //         return false;
+        //     }
+        // }
+        functions.emplace_back(cb);
+        return true;
     }
     void Remove(std::function<R(Args...)> cb)
     {
-        std::lock_guard<std::mutex> guard(lock);
-        functions.erase(std::type_index(cb.target_type()));
+        for (auto it = functions.begin(); it != functions.end(); it++) {
+            if (it->target_type() == cb.target_type()) {
+                it = --functions.erase(it);
+            }
+        }
         return;
     }
     bool operator+=(std::function<R(Args...)> cb) { return Add(cb); }
     void operator-=(std::function<R(Args...)> cb) { return Remove(cb); }
 };
 
-}
+}    // namespace nineknight
