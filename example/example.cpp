@@ -57,7 +57,7 @@ int main()
     add(onEvent);
     del(onEvent);    // this can't remove the function that was added in `add`
 
-    add(onEvent);    // this won't add the function in `add`, duplicated
+    add(onEvent);
     del(onEvent);
 
     FooBar foobar;
@@ -66,6 +66,16 @@ int main()
     onEvent += func3;
     onEvent -= std::bind(&FooBar::show, &foobar, std::placeholders::_1,
                          std::placeholders::_2);    // this can remove func3
+
+    std::list<std::string> strings{"hello", "world"};
+    int i = 0;
+    for (auto &&s : strings) {
+        auto func = [s](uint32_t, std::string) { std::cout << s << std::endl; };
+        onEvent += func;
+        if (++i == 2) {
+            onEvent -= func;    // this will remove all `func`
+        }
+    }
 
     // call delegate
     onEvent(12345, "hello");
