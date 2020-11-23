@@ -34,9 +34,11 @@ class delegate<R(Args...)>
     }
     void Remove(std::function<R(Args...)> cb)
     {
-        for (auto it = functions.begin(); it != functions.end(); it++) {
+        for (auto it = functions.begin(); it != functions.end();) {
             if (it->target_type() == cb.target_type()) {
-                it = --functions.erase(it);
+                it = functions.erase(it);
+            } else {
+                ++it;
             }
         }
         return;
