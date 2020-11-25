@@ -1,5 +1,5 @@
 #include <functional>
-#include <list>
+#include <vector>
 
 namespace nineknight {
 
@@ -9,7 +9,7 @@ class delegate;
 template <typename R, typename... Args>
 class delegate<R(Args...)>
 {
-    std::list<std::function<R(Args...)>> functions;
+    std::vector<std::function<R(Args...)>> functions;
 
     delegate(const delegate&);
     delegate& operator=(const delegate&);
