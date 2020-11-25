@@ -10,7 +10,8 @@ class FooBar
     void show(uint32_t, std::string str) { std::cout << str << std::endl; }
 };
 
-void add(delegate<void(uint32_t, std::string)> &onEvent)
+template <typename ThreadPolicy>
+void add(delegate<void(uint32_t, std::string), ThreadPolicy> &onEvent)
 {
     std::string lambda{"hello world"};
     auto func = std::bind([](std::string lambda, uint32_t,
@@ -19,7 +20,8 @@ void add(delegate<void(uint32_t, std::string)> &onEvent)
     onEvent += func;
 }
 
-void del(delegate<void(uint32_t, std::string)> &onEvent)
+template <typename ThreadPolicy>
+void del(delegate<void(uint32_t, std::string), ThreadPolicy> &onEvent)
 {
     std::string lambda{"hello world"};
     auto func = std::bind([](std::string lambda, uint32_t,
@@ -67,7 +69,7 @@ int main()
     onEvent -= std::bind(&FooBar::show, &foobar, std::placeholders::_1,
                          std::placeholders::_2);    // this can remove func3
 
-    std::list<std::string> strings{"hello", "world"};
+    std::vector<std::string> strings{"hello", "world"};
     int i = 0;
     for (auto &&s : strings) {
         auto func = [s](uint32_t, std::string) { std::cout << s << std::endl; };
