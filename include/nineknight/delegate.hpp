@@ -19,7 +19,7 @@ class delegate<R(Args...)>
     void operator()(Args... args)
     {
         for (auto& function : functions) {
-            function(args...);
+            function(std::forward<Args>(args)...);
         }
     }
     bool Add(std::function<R(Args...)> cb)
